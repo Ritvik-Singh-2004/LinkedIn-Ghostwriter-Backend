@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware # NEW IMPORT
 from llm_engine import generate_linkedin_post
@@ -19,7 +20,7 @@ class PostRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"status": "Online"}
+    return FileResponse("index.html", media_type="text/html")
 
 @app.post("/generate")
 def create_post(request: PostRequest):

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ghostwriter</title>
+    <style>
+        /* The Diagonal Gradient Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, hsla(325, 100%, 35%, 0.8), hsl(282, 91%, 36%), hsla(234, 95%, 32%, 0.8));
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Centered Container */
+        .container {
+            background: rgba(255, 255, 255, 0.221);
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 { margin-top: 0; }
+
+        /* Prompt Box */
+        input[type="text"] {
+            width: 90%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        /* Generate Button */
+        button {
+            background-color: #0a66c2; /* LinkedIn Blue */
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #004182; }
+
+        /* Response Box */
+        textarea {
+            width: 90%;
+            height: 200px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            resize: none;
+            font-size: 15px;
+            outline: none;
+            display: none; /* Hidden until generated */
+        }
+
+        .copy-btn {
+            background-color: #28a745;
+            margin-top: 10px;
+            display: none; /* Hidden until generated */
+        }
+        
+        .copy-btn:hover { background-color: #1e7e34; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>AI LinkedIn Ghostwriter</h1>
+        <p>Type your topic, get a viral post.</p>
+        
+        <input type="text" id="topicInput" placeholder="e.g., The importance of constant practice...">
+        <br>
+        <button id="generateBtn" onclick="generatePost()">Generate Post</button>
+        
+        <textarea id="responseBox" readonly></textarea>
+        <br>
+        <button id="copyBtn" class="copy-btn" onclick="copyText()">Copy to Clipboard</button>
+    </div>
+
+    <script>
+        async function generatePost() {
+            const topic = document.getElementById('topicInput').value;
+            const generateBtn = document.getElementById('generateBtn');
+            const responseBox = document.getElementById('responseBox');
+            const copyBtn = document.getElementById('copyBtn');
+
+            if (!topic) {
+                alert("Please enter a topic first!");
+                return;
+            }
+
+            // UI Loading State
+            generateBtn.innerText = "Generating...";
+            generateBtn.disabled = true;
+
+            try {
+                // The Fetch call to your FastAPI backend
+                const response = await fetch("http://127.0.0.1:8000/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ topic: topic })
+                });
+
+                const data = await response.json();
+                
+                // Displaying the result
+                responseBox.value = data.engaging_linkedin_post;
+                responseBox.style.display = "block";
+                copyBtn.style.display = "inline-block";
+
+            } catch (error) {
+                responseBox.value = "Error connecting to the server. Make sure Uvicorn is running!";
+                responseBox.style.display = "block";
+            }
+
+            // Reset Button
+            generateBtn.innerText = "Generate Post";
+            generateBtn.disabled = false;
+        }
+
+        function copyText() {
+            const responseBox = document.getElementById('responseBox');
+            navigator.clipboard.writeText(responseBox.value);
+            
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = "Copied!";
+            setTimeout(() => { copyBtn.innerText = "Copy to Clipboard"; }, 2000);
+        }
+    </script>
+</body>
+</html>

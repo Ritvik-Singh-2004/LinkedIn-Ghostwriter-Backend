@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware # NEW IMPORT
 from llm_engine import generate_linkedin_post
 
-app = FastAPI(title="LinkedIn Ghostwriter API")
+app = FastAPI(title="The Hermes Project")
 
 # NEW: The CORS Bouncer
 app.add_middleware(
